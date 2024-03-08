@@ -181,8 +181,7 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
         }
     }
     if last_day_of_week != 7 {
-        line.push_str(&" ".repeat(3 * (7 - last_day_of_week)));
-        line.push(' ');
+        line.push_str(&" ".repeat(3 * (7 - last_day_of_week) + 1));
         lines.push(line);
     }
 
