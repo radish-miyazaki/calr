@@ -1,4 +1,4 @@
-use std::{fmt::format, str::FromStr};
+use std::str::FromStr;
 
 use chrono::{Datelike, NaiveDate};
 use clap::Parser;
@@ -209,12 +209,11 @@ fn format_months_of_year(year: i32, today: NaiveDate) -> Vec<String> {
 
 pub fn run() -> MyResult<()> {
     let args = Args::parse();
-    let mut lines = vec![];
     let today = chrono::Local::now().date_naive();
 
-    if args.show_current_year {
+    let lines = if args.show_current_year {
         let year = today.year();
-        lines = format_months_of_year(year, today);
+        format_months_of_year(year, today)
     } else {
         match args.month {
             Some(month) => {
@@ -222,17 +221,17 @@ pub fn run() -> MyResult<()> {
                     Some(year) => year,
                     None => today.year(),
                 };
-                lines = format_month(year, month, true, today);
+                format_month(year, month, true, today)
             }
             None => {
                 if let Some(year) = args.year {
-                    lines = format_months_of_year(year, today);
+                    format_months_of_year(year, today)
                 } else {
-                    lines = format_month(today.year(), today.month(), true, today);
+                    format_month(today.year(), today.month(), true, today)
                 }
             }
         }
-    }
+    };
 
     for line in lines {
         println!("{}", line);
