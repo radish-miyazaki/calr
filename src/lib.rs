@@ -145,11 +145,14 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
 
     let month_name = &MONTH_NAMES[(month - 1) as usize];
     // month and year header
-    if print_year {
-        lines.push(format!("{:>8} {:<13}", month_name.ja, year));
-    } else {
-        lines.push(format!("{:^20}  ", month_name.ja));
-    }
+    lines.push(format!(
+        "{:^20}  ",
+        if print_year {
+            format!("{} {}", month_name.ja, year)
+        } else {
+            month_name.ja.to_string()
+        },
+    ));
 
     // day of week header
     lines.push("日 月 火 水 木 金 土  ".to_string());
@@ -184,7 +187,7 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
     }
 
     while lines.len() < LINES_HEIGHT {
-        lines.push("".repeat(LINE_WIDTH));
+        lines.push(" ".repeat(LINE_WIDTH));
     }
 
     lines
