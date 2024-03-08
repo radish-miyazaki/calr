@@ -4,6 +4,9 @@ use chrono::{Datelike, NaiveDate};
 use clap::Parser;
 use itertools::izip;
 
+const LINE_WIDTH: usize = 22;
+const LINES_HEIGHT: usize = 8;
+
 type MyResult<T> = Result<T, Box<dyn std::error::Error>>;
 struct Month {
     en: &'static str,
@@ -138,13 +141,9 @@ fn last_day_in_month(year: i32, month: u32) -> NaiveDate {
 }
 
 fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Vec<String> {
-    let month_name = &MONTH_NAMES[(month - 1) as usize];
-    let first_day = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
-    let last_day = last_day_in_month(year, month);
-    let first_day_of_week = first_day.weekday().number_from_sunday() as usize;
-    let last_day_of_week = last_day.weekday().number_from_sunday() as usize;
+    let mut lines = Vec::with_capacity(LINES_HEIGHT);
 
-    let mut lines = vec![];
+    let month_name = &MONTH_NAMES[(month - 1) as usize];
     // month and year header
     if print_year {
         lines.push(format!("{:>8} {:<13}", month_name.ja, year));
@@ -156,6 +155,11 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
     lines.push("日 月 火 水 木 金 土  ".to_string());
 
     // days
+    let first_day = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
+    let last_day = last_day_in_month(year, month);
+    let first_day_of_week = first_day.weekday().number_from_sunday() as usize;
+    let last_day_of_week = last_day.weekday().number_from_sunday() as usize;
+
     let mut line = " ".repeat(3 * (first_day_of_week - 1));
     for day in 1..=last_day.day() {
         let day_str = if today.day() == day && today.month() == month && today.year() == year {
@@ -179,8 +183,8 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
         lines.push(line);
     }
 
-    for _ in 1..=8 - lines.len() {
-        lines.push(" ".repeat(22));
+    while lines.len() < LINES_HEIGHT {
+        lines.push("".repeat(LINE_WIDTH));
     }
 
     lines
