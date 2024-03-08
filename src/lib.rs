@@ -157,13 +157,15 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
     // day of week header
     lines.push("日 月 火 水 木 金 土  ".to_string());
 
-    // days
     let first_day = NaiveDate::from_ymd_opt(year, month, 1).unwrap();
     let last_day = last_day_in_month(year, month);
     let first_day_of_week = first_day.weekday().number_from_sunday() as usize;
     let last_day_of_week = last_day.weekday().number_from_sunday() as usize;
 
+    // empty days before the first day of the month
     let mut line = " ".repeat(3 * (first_day_of_week - 1));
+
+    // days of the month
     for day in 1..=last_day.day() {
         let day_str = if today.day() == day && today.month() == month && today.year() == year {
             let style = ansi_term::Style::new();
@@ -180,11 +182,14 @@ fn format_month(year: i32, month: u32, print_year: bool, today: NaiveDate) -> Ve
             line = String::new();
         }
     }
+
+    // empty days after the last day of the month
     if last_day_of_week != 7 {
         line.push_str(&" ".repeat(3 * (7 - last_day_of_week) + 1));
         lines.push(line);
     }
 
+    // fill the rest of the lines with empty strings
     while lines.len() < LINES_HEIGHT {
         lines.push(" ".repeat(LINE_WIDTH));
     }
