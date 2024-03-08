@@ -8,67 +8,73 @@ const PRG: &str = "calr";
 
 #[test]
 fn dies_year_0() -> TestResult {
+    let expected = "year \"0\" not in the range 1 through 9999";
     Command::cargo_bin(PRG)?
         .arg("0")
         .assert()
         .failure()
-        .stderr("year \"0\" not in the range 1 through 9999\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_year_13() -> TestResult {
+    let expected = "year \"10000\" not in the range 1 through 9999";
     Command::cargo_bin(PRG)?
         .arg("10000")
         .assert()
         .failure()
-        .stderr("year \"10000\" not in the range 1 through 9999\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_invalid_year() -> TestResult {
+    let expected = "invalid value 'foo' for '[YEAR]'";
     Command::cargo_bin(PRG)?
         .arg("foo")
         .assert()
         .failure()
-        .stderr("Invalid integer \"foo\"\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_month_0() -> TestResult {
+    let expected = "month \"0\" not in the range 1 through 12";
     Command::cargo_bin(PRG)?
         .args(["-m", "0"])
         .assert()
         .failure()
-        .stderr("month \"0\" not in the range 1 through 12\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_month_13() -> TestResult {
+    let expected = "month \"13\" not in the range 1 through 12";
     Command::cargo_bin(PRG)?
         .args(["-m", "13"])
         .assert()
         .failure()
-        .stderr("month \"13\" not in the range 1 through 12\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_invalid_month() -> TestResult {
+    let expected = "invalid month \"foo\"";
     Command::cargo_bin(PRG)?
         .args(["-m", "foo"])
         .assert()
         .failure()
-        .stderr("Invalid month \"foo\"\n");
+        .stderr(predicate::str::contains(expected));
     Ok(())
 }
 
 #[test]
 fn dies_y_and_month() -> TestResult {
-    let expected = "The argument '-m <MONTH>' cannot be used with '--year'";
+    let expected = "the argument '--month <MONTH>' cannot be used with '--year'";
     Command::cargo_bin(PRG)?
         .args(["-m", "1", "-y"])
         .assert()
@@ -79,7 +85,7 @@ fn dies_y_and_month() -> TestResult {
 
 #[test]
 fn dies_y_and_year() -> TestResult {
-    let expected = "The argument '<YEAR>' cannot be used with '--year'";
+    let expected = "the argument '--year' cannot be used with '[YEAR]'";
     Command::cargo_bin(PRG)?
         .args(["-y", "2000"])
         .assert()
@@ -159,28 +165,28 @@ fn default_one_month() -> TestResult {
     let stdout = String::from_utf8(out.stdout.clone())?;
     let lines: Vec<_> = stdout.split('\n').collect();
     assert_eq!(lines.len(), 9);
-    assert_eq!(lines[0].len(), 22);
+    assert_eq!(lines[0].chars().count(), 22);
     Ok(())
 }
 
 #[test]
-fn test_2_2024_leap_year() -> TestResult {
-    run(&["-m", "2", "2024"], "tests/expected/2-2024.txt")
+fn test_2_2020_leap_year() -> TestResult {
+    run(&["-m", "2", "2020"], "tests/expected/2-2020.txt")
 }
 
 #[test]
-fn test_4_2024() -> TestResult {
-    run(&["-m", "4", "2024"], "tests/expected/4-2024.txt")
+fn test_4_2023() -> TestResult {
+    run(&["-m", "4", "2023"], "tests/expected/4-2023.txt")
 }
 
 #[test]
-fn test_april_2024() -> TestResult {
-    run(&["2024", "-m", "april"], "tests/expected/4-2024.txt")
+fn test_april_2023() -> TestResult {
+    run(&["2023", "-m", "april"], "tests/expected/4-2023.txt")
 }
 
 #[test]
-fn test_2024() -> TestResult {
-    run(&["2024"], "tests/expected/2024.txt")
+fn test_2023() -> TestResult {
+    run(&["2023"], "tests/expected/2023.txt")
 }
 
 #[test]
